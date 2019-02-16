@@ -1,0 +1,33 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active" aria-current="page">Home</li>
+    <li class="breadcrumb-item"><a href="{% url 'pharmacy_info' %}">Pharmacy Information</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'PBM_info' %}">PBM Information</a></li>
+  </ol>
+</nav>
+
+
+<div class="p-3 mb-2 bg-info text-white mx-3">
+  <h1 class="mx-5 text-center">PharmaSee</h1>
+</div>
+<p class="mx-5 text-info text-center">Welcome to PharmaSee, a website developed by <em>LambdaSchool labs7 Medical Dashboard Team</em>!</p>
+<div class="alert alert-info mx-3" role="alert">
+  <h2 class="mx-5">What is this?</h2>
+  <p class="mx-5">We're here to give you the pharmacy information you need to be an informed consumer.</p>
+  <p class="mx-5">For patients looking for the cheapest pharmacy to fill a prescription, please select "Pharmacy Information" in the navigation toolbar.</p>
+  <p class="mx-5">For organizations or individuals looking for information on Pharmacy Benefits Managers (PBMs), please select "PBM Information" in the navigation toolbar. A PBM contracts with health insurance companies to negotiate drug prices with individual pharmacies.</p>
+  <p class="mx-5">The PBM results will show an average Unit Cost (usually price per pill) while the Pharmacy information will show an estimated cost by multiplying known Unit Costs by the quantity specified by your specific prescription.</p>
+</div>
+
+<!-- Description -->
+<p class="mx-5 text-info text-center">We started with 15 separate, only partially standardized, csv files of over 4 million prescription claims. This is how we got to this website.</p>
+
+{% block content %}
+{% endblock %}
