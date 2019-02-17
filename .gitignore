@@ -29,7 +29,7 @@ MANIFEST
 local_deploy/db.sqlite3
 claims_data_handling/data/*
 claims_data_handling/supplementary_data*
-.vscode/*
+.vscode*
 
 
 # PyInstaller
