@@ -26,8 +26,10 @@ wheels/
 MANIFEST
 
 # Files
-rx_info/db.sqlite3
-rx_info/rxvenv/
+local_deploy/db.sqlite3
+claims_data_handling/data/*
+claims_data_handling/supplementary_data*
+vscode/
 
 
 # PyInstaller
