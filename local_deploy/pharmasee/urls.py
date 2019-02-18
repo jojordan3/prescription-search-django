@@ -22,4 +22,3 @@ urlpatterns = [
     path('rx_info/', include('rx_info.urls')),
     path('admin/', admin.site.urls),
 ]
-

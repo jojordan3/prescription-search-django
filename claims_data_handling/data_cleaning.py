@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import re
 from . import feature_engineering as fe
+from supplementary_data import brand_generic_mapping
 
 
 def get_data(paths, sep_char='|', nan_values=None):
@@ -22,7 +23,8 @@ def get_data(paths, sep_char='|', nan_values=None):
                                   'PharmacyZip', 'MailOrderPharmacy',
                                   'DrugLabelName'])
 
-        df = df[df.ClaimStatus == 'P'].drop(columns=['ClaimStatus'])
+        df = df[df.ClaimStatus == 'P'].drop(columns=['ClaimStatus']).\
+            dropna(subset=['DrugLabelName'])
         for column in df.columns:
             if column == 'DrugLabelName':
                 df[column] = df[column].apply(lambda name: name.lower())
@@ -33,9 +35,12 @@ def get_data(paths, sep_char='|', nan_values=None):
 
 def _rid_whitespace(value):
     elipsis = re.search('...', value)
-    if elipsis:
-        value = value[:elipsis.start()] + value[elipsis.end():]
-    return (' '.join(value.strip().split()))
+    if value:
+        if elipsis:
+            value = value[:elipsis.start()] + value[elipsis.end():]
+        return (' '.join(value.strip().split()))
+    else:
+        return ''
 
 
 def engineer_features(df):

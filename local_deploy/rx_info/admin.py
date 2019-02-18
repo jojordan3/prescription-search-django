@@ -7,6 +7,7 @@ from .models import rx_claim
 # admin
 # labs7meddash
 
+
 @admin.register(rx_claim)
 class PersonAdmin(ImportExportModelAdmin):
     pass
