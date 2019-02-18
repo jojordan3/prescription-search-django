@@ -31,7 +31,8 @@ local_deploy/db.sqlite3
 claims_data_handling/data/*
 claims_data_handling/supplementary_data/uszips.csv
 claims_data_handling/supplementary_data/product.txt
-
+local_deploy/pharmasee/settings.py
+heroku_deployment/labs7_med_dash_deployment/settings.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -63,6 +64,13 @@ coverage.xml
 *.log
 local_settings.py
 db.sqlite3
+*.pyc
+*~
+__pycache__
+myvenv
+db.sqlite3
+/static
+.DS_Store
 
 # Flask stuff:
 instance/
