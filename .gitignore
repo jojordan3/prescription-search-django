@@ -31,8 +31,6 @@ local_deploy/db.sqlite3
 claims_data_handling/data/*
 claims_data_handling/supplementary_data/uszips.csv
 claims_data_handling/supplementary_data/product.txt
-local_deploy/pharmasee/settings.py
-heroku_deployment/labs7_med_dash_deployment/settings.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
