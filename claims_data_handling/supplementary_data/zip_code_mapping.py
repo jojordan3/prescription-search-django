@@ -11,5 +11,5 @@ zip_code_info = pd.read_csv('. product.txt', encoding="ISO-8859-1",
 
 zip_code_info.columns = ['zipcode', 'latitude', 'longitude']
 
-if if __name__ == "__main__":
+if __name__ == "__main__":
     pass
