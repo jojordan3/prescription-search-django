@@ -77,5 +77,16 @@ def fill_pharm_info(df):
     missing information, standardize information, and identify pharmacies
     under disparate names.
     '''
+    df.PharmacyName = df.PharmacyName.apply(lambda x: fix_pharm_name(x))
+
     # TODO
     return df
+
+
+def fix_pharm_name(name):
+    name = re.sub(r'target', 'CVS', name, flags=re.I)
+    name = re.sub(r'#*\s*[0-9]*', '', name).strip()
+    if 'PHARMACY' not in name:
+        name += ' PHARMACY'
+
+    return name

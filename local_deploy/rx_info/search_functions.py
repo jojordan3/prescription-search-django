@@ -9,16 +9,16 @@ def search_by_pharm(drug, zipcode):
         qs = RxClaim.objects.filter(pharmacyid__PharmacyZip__in=[zipcode,
                                                                  'XXXXX'],
                                     DrugLabelName__contains=drug)
-        df = qs.to_pivot_table(rows=['PharmacyID'], cols=['DrugLabelName'],
-                               values='UnitCost', aggfunc='np.mean')
-        return df.sort_values(by='DrugLabelName')
+        df = qs.to_pivot_table(rows=['PharmacyID'], values='UnitCost',
+                               aggfunc='np.mean')
+        return df.sort_values(by='UnitCost')
     except DoesNotExist:
         try:
             zipcodes = get_nearby(zipcode)
             qs = RxClaim.objects.filter(pharmacyid__PharmacyZip__in=[zipcodes],
                                         DrugLabelName__contains=drug)
-            df = qs.to_pivot_table(rows=['PharmacyID'], cols=['DrugLabelName'],
-                                   values='UnitCost', aggfunc='np.mean')
+            df = qs.to_pivot_table(rows=['PharmacyID'], values='UnitCost',
+                                   aggfunc='np.mean')
             return df.sort_values(by='DrugLabelName')[:5]
         except:
             raise
