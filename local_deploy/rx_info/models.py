@@ -44,6 +44,6 @@ class ZipCodeInfo(models.Model):
     zipcode = models.CharField(max_length=5, primary_key=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
-]
+
     # Allows SQLite query sets to be transformed to pandas objects
     objects = DataFrameManager()

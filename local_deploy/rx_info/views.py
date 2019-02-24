@@ -46,7 +46,7 @@ def pharmacy_results(request):
         ph_df = sf.get_pharm_info(df.index.values.tolist())
         results = pd.concat([ph_df, df], axis=1, ignore_index=True)
         results = results.drop(columns=['DrugLabelName'])
-        
+
         # Convert df to html
         data_html = results.to_html(index=False)
         context = {'loaded_data': data_html}
