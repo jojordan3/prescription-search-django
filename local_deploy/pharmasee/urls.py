@@ -20,5 +20,5 @@ from rx_info import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('rx_info/', include('rx_info.urls')),
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls)
 ]

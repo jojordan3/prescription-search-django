@@ -1,8 +1,9 @@
 import pandas as pd
+import sqlite3
 
 
 def get_generic(brand, generic):
-    meds = []
+    meds = ()
     for i in range(len(brand)):
         brand_ = brand[i].lower()
         generic_ = generic[i].lower()
@@ -16,7 +17,7 @@ def get_generic(brand, generic):
 
 
 if __name__ == "main":
-    ndc_product = pd.read_csv('. product.txt', na_values='NaN', sep='\t',
+    ndc_product = pd.read_csv('product.txt', na_values='NaN', sep='\t',
                               usecols=['PROPRIETARYNAME',
                                        'NONPROPRIETARYNAME'],
                               encoding="ISO-8859-1")

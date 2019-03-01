@@ -3,14 +3,13 @@ from django_pandas.managers import DataFrameManager
 import numpy as np
 
 
-class RxClaim(models.Model):
-    '''Model for individual rx_claims--used in views.py to search local
-    pharmacies and PBMs and to create SQLite db
+class ZipCodeInfo(models.Model):
+    '''Model containing zip code information for lookup when local pharmacy
+    search returns no results.
     '''
-    PharmacyID = models.ForeignKey(PharmacyInfo)
-    UnitCost = models.FloatField()
-    DrugLabelName = models.CharField(max_length=200)
-    PBMVendor = models.CharField(max_length=200)
+    zipcode = models.CharField(max_length=5, primary_key=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
     # Allows SQLite query sets to be transformed to pandas objects
     objects = DataFrameManager()
@@ -23,7 +22,20 @@ class PharmacyInfo(models.Model):
     PharmacyName = models.CharField(max_length=200)
     PharmacyStreetAddress1 = models.CharField(max_length=200)
     PharmacyCity = models.CharField(max_length=200)
-    PharmacyZip = models.ForeignKey(ZipCodeInfo)
+    PharmacyZip = models.ForeignKey(ZipCodeInfo, on_delete='set null')
+
+    # Allows SQLite query sets to be transformed to pandas objects
+    objects = DataFrameManager()
+
+
+class RxClaim(models.Model):
+    '''Model for individual rx_claims--used in views.py to search local
+    pharmacies and PBMs and to create SQLite db
+    '''
+    PharmacyID = models.ForeignKey(PharmacyInfo, on_delete='set null')
+    UnitCost = models.FloatField()
+    DrugLabelName = models.CharField(max_length=200)
+    PBMVendor = models.CharField(max_length=200)
 
     # Allows SQLite query sets to be transformed to pandas objects
     objects = DataFrameManager()
@@ -35,15 +47,3 @@ class BrandToGeneric(models.Model):
     '''
     Brand = models.CharField(max_length=200, primary_key=True)
     Generic = models.CharField(max_length=200)
-
-
-class ZipCodeInfo(models.Model):
-    '''Model containing zip code information for lookup when local pharmacy
-    search returns no results.
-    '''
-    zipcode = models.CharField(max_length=5, primary_key=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-
-    # Allows SQLite query sets to be transformed to pandas objects
-    objects = DataFrameManager()

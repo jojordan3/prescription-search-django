@@ -40,12 +40,11 @@ def pharmacy_results(request):
     quantity = int(quantity)
     try:
         df = sf.search_by_pharm(drug, zipcode)
-        df['EstimatedPrice'] = df.apply(lambda row: f'${(quantity *\
-                                                        row['DrugLabelName'])\
-                                                        :.2f}')
+        df['EstimatedPrice'] = df.UnitCost.apply(lambda x:
+                                                 f'${(quantity * x):.2f}')
         ph_df = sf.get_pharm_info(df.index.values.tolist())
         results = pd.concat([ph_df, df], axis=1, ignore_index=True)
-        results = results.drop(columns=['DrugLabelName'])
+        results = results.drop(columns=['UnitCost'])
 
         # Convert df to html
         data_html = results.to_html(index=False)

@@ -1,5 +1,5 @@
 Django>=2.1.2
 django-pandas>=0.5.1
-pandas>=0.23.4
+pandas==0.23.4
 django-import-export>=1.0.1
-python>=2.5
+python>=3.6.0

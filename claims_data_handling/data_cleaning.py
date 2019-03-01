@@ -5,57 +5,64 @@ from . import feature_engineering as fe
 from supplementary_data import brand_generic_mapping
 
 
-def get_data(paths, sep_char='|', nan_values=None):
+column_names = ['PBMVendor', 'ClaimStatus', 'Quantity', 'IngredientCost',
+                'DispensingFee', 'Copay', 'CoInsurance', 'Deductible',
+                'OutOfPocket', 'PaidAmount', 'PharmacyNumber',
+                'PharmacyTaxId', 'PharmacyNPI', 'PharmacyName',
+                'PharmacyStreetAddress1', 'PharmacyCity', 'PharmacyState',
+                'PharmacyZip', 'DrugLabelName']
+
+
+def get_data(path, sep_char='|', nan_values=None):
     '''Get data from files, using valid filepath strings. Put data into a
     pandas dataframe, eliminating unnecessary
     '''
-    df_list = []
-    for path in paths:
-        df = pd.read_csv(path, sep=sep_char, dtype=str,
-                         na_values=['nan', 'NaN', r'\s*'].extend(nan_values),
-                         usecols=['PBMVendor', 'ClaimStatus', 'Quantity',
-                                  'IngredientCost', 'DispensingFee', 'Copay',
-                                  'CoInsurance', 'Deductible', 'OutOfPocket',
-                                  'PaidAmount', 'PharmacyNumber',
-                                  'PharmacyTaxId', 'PharmacyNPI',
-                                  'PharmacyName', 'PharmacyStreetAddress1',
-                                  'PharmacyCity', 'PharmacyState',
-                                  'PharmacyZip', 'MailOrderPharmacy',
-                                  'DrugLabelName'])
 
-        df = df[df.ClaimStatus == 'P'].drop(columns=['ClaimStatus']).\
-            dropna(subset=['DrugLabelName'])
-        for column in df.columns:
-            if column == 'DrugLabelName':
-                df[column] = df[column].apply(lambda name: name.lower())
-            df[column] = df[column].apply(lambda value: _rid_whitespace(value))
-        df_list.append(df)
-    claims = pd.concat(df_list, ignore_index=True)
+    if path[-4:] == '.csv':
+        claims = _make_df(path, sep_char='|', nan_values=None)
 
-
-def _rid_whitespace(value):
-    elipsis = re.search('...', value)
-    if value:
-        if elipsis:
-            value = value[:elipsis.start()] + value[elipsis.end():]
-        return (' '.join(value.strip().split()))
     else:
-        return ''
+        df_list = []
+        for filename in os.listdir(path):
+            if filename[-4:] == '.csv':
+                fullpath = os.path.join(path, filename)
+                df = _make_df(fullpath, sep_char='|', nan_values=None)
+        df_list.append(df)
+    
+        claims = pd.concat(df_list, sort=True, ignore_index=True)
+    
+    claims = claims[claims.ClaimStatus == 'P'].drop(
+        columns=['ClaimStatus']).dropna(subset=['DrugLabelName'])
+    for column in claims.columns:
+        if column == 'DrugLabelName':
+            claims[column] = claims[column].apply(lambda name: name.lower())
+        claims[column] = claims[column].apply(
+            lambda value: value.replace('...', '').strip() if isinstance(value, str) else value)
+    
+    claims = engineer_features(claims)
+    
+    claims = claims[claims.UnitCost > 0].drop(columns=['IngredientCost', 'DispensingFee',
+                                                       'OutOfPocket', 'PaidAmount', 'Quantity'])
+    
+    return claims
 
 
-def engineer_features(df):
-    df['TotalCost'] = df.apply(lambda row: fe.get_total(row), axis=1)
-    df = df[df.TotalCost > 0]
-    df['UnitCost'] = df.apply(lambda row: fe.get_unit_cost(row), axis=1)
-    df['PharmacyZip'] = df.apply(lambda row: fe.get_zip_mail_order(row),
-                                 axis=1)
-    df = fe.fill_pharm_info(df)
+def _make_df(filepath, sep_char='|', nan_values=None):
+    with open(path) as data:
+        header = data.readline()
+    columns = [col for col in column_names if col in header]
+    df = pd.read_csv(path, sep=sep_char, usecols=columns,
+                     dtype=str, na_values=['nan', 'NaN', r'\s*', ''].extend(nan_values))
+    for col in list(set(column_names) - set(columns)):
+        df[col] = [np.nan] * len(df)
     return df
 
 
-def drop_final(df):
-    df = df.drop(columns=['CoInsurance', 'Deductible', 'DispensingFee',
-                          'IngredientCost', 'MailOrderPharmacy', 'OutOfPocket',
-                          'PaidAmount', 'PaidOrAdjudicatedDate', 'PharmacyNPI',
-                          'PharmacyNumber', 'PharmacyState', 'PharmacyTaxId',
-                          'Quantity', 'TotalCost'])
+def engineer_features(df):
+    df['UnitCost'] = df.apply(lambda row: fe.get_unit_cost(row), axis=1)
+    df['PharmacyName'] = df.PharmacyName.apply(lambda x: fe.fix_pharm_name(x))
+    df['PharmacyStreetAddress1'] = df.PharmacyStreetAddress1.apply(
+        lambda x: standardize_address(x))
+    df['PharmacyZip'] = df.PharmacyZip.apply(lambda x: standard_zip(x))
+    df = fe.fill_pharm_info(df)
+    return df

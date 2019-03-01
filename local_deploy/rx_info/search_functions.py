@@ -33,9 +33,9 @@ def search_by_pbm(self, drug):
     drug = generic(drug)
     try:
         qs = RxClaim.objects.filter(DrugLabelName__contains=drug)
-        df = qs.to_pivot_table(rows=['PBMVendor'], cols=['DrugLabelName'],
+        df = qs.to_pivot_table(rows=['PBMVendor'],
                                values='UnitCost', aggfunc='np.mean')
-        return df.sort_values(by='DrugLabelName')[:5]
+        return df.sort_values(by='UnitCost')[:5]
     except DoesNotExist:
         raise
 
