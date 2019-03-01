@@ -116,7 +116,7 @@ def fix_pharm_name(name):
 
 
 def fill_pharm_info(df):
-    '''Use information from all pharmacy-related features to fill in possible
+    '''Use information from all known pharmacies to fill in possible
     missing information, standardize information, and identify pharmacies
     under disparate names.
     '''
