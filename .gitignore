@@ -31,8 +31,7 @@ local_deploy/db.sqlite3
 claims_data_handling/data/*
 claims_data_handling/supplementary_data/uszips.csv
 claims_data_handling/supplementary_data/product.txt
-rxlenv/*
-migrations/*
+rxlenv/
 .DS_Store
 
 # PyInstaller
