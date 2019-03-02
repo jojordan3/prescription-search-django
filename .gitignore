@@ -31,6 +31,8 @@ local_deploy/db.sqlite3
 claims_data_handling/data/*
 claims_data_handling/supplementary_data/uszips.csv
 claims_data_handling/supplementary_data/product.txt
+rxlenv/*
+migrations/*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

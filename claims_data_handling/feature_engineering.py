@@ -2,10 +2,10 @@ import numpy as np
 
 
 def get_unit_cost(row):
-    '''This function calculates a the unit cost by first calculating the
-    total cost out of the available columns relating to cost. There are
-    two unique measurements to get the total cost, and completeness of
-    the necessary fields varies widely across files.
+    '''This function calculates a the unit cost by first calculating the total
+    cost out of the available columns relating to cost. There are two unique
+    measurements to get the total cost, and completeness of the necessary
+    fields varies widely across files.
 
     The function then divides the total cost by the Quantity.
     '''
@@ -17,7 +17,7 @@ def get_unit_cost(row):
         cost1 = 0
 
     cost2 = float(row['OutOfPocket']) + float(row['PaidAmount'])
-    
+
     if float(row['Quantity']) > 0:
         return max(cost1, cost2)/float(row['Quantity'])
     else:
@@ -25,8 +25,8 @@ def get_unit_cost(row):
 
 
 def standard_zip(value):
-    '''A safety for if the zipcodes were read in as ints and thus leading
-    zeroes were dropped.
+    '''Reduces 9 digit zip codes to standard 5 digit zip codes. Also validates
+    that zip codes are read in as strings and thus retain leading zeroes.
     '''
     if isinstance(value, str):
         value_len = len(value)
@@ -45,20 +45,22 @@ def standardize_address(address):
     entered using different abbreviations.
     '''
     if isinstance(address, str):
-        abbreviations = [['BRDWAY', 'BROADWAY'], ['BWAY', 'BROADWAY'],
-                         ['AVENUE', 'AVE'], ['BOULEVARD', 'BLVD'], ['ROAD', 'RD'],
-                         ['TRAC', 'TRACE'], ['HIGHWAY', 'HWY'], ['STREET', 'ST'],
-                         ['PARKWAY', 'PKWY'], ['PLZ', 'PLAZA'], ['TRL', 'TRAIL'],
-                         ['SQUARE', 'SQ'], ['RTE', 'RT'], ['ROUTE', 'RT'],
-                         ['DRIVE', 'DR'], ['EAST', 'E'], ['WEST', 'W'],
-                         ['NORTH', 'N'], ['SOUTH', 'S'], ['/', ' '],
-                         ['FREDRICK', 'FREDERICK'], [' CALEF', ' CALIFORNIA'],
-                         ['CIRCLE', 'CIR'], ['STE', 'SUITE']]
+        abbreviations = [
+            ['BRDWAY', 'BROADWAY'], ['BWAY', 'BROADWAY'], ['AVENUE', 'AVE'],
+            ['BOULEVARD', 'BLVD'], ['ROAD', 'RD'], ['TRAC', 'TRACE'],
+            ['HIGHWAY', 'HWY'], ['STREET', 'ST'], ['PARKWAY', 'PKWY'],
+            ['PLZ', 'PLAZA'], ['SOUTH', 'S'], ['SQUARE', 'SQ'], ['/', ' '],
+            [' RTE', ' RT'], ['ROUTE', 'RT'], ['DRIVE', 'DR'], ['EAST', 'E'],
+            ['WEST', 'W'], ['NORTH', 'N'], ['SOUTH', 'S'], ['CIRCLE', 'CIR'],
+            ['FREDRICK', 'FREDERICK'], [' STE ', ' SUITE '], ['SECOND', '2ND'],
+            [' CALEF', ' CALIFORNIA'], [' SO ', ' S '], ['FIRST', '1ST'],
+            [' MOUNT ', ' MT '], ['CTR', 'CENTER'], ['CNTR', 'CENTER']
+            ]
         address = re.sub(r'[#\.,\-/\']', '', address)
         for abbreviation in abbreviations:
             if isinstance(address, str):
                 address = address.replace(abbreviation[0], abbreviation[1])
-        if address == '' or address == r'[\s*]':
+        if (address == '') or (address == r'[\s*]'):
             address = np.nan
         else:
             addresss = ' '.join(address.split())
@@ -66,51 +68,50 @@ def standardize_address(address):
 
 
 def fix_pharm_name(name):
-    '''Standardize Pharmacy Names'''
+    '''Standardize pharmacy name'''
     if isinstance(name, str):
-        if ('ORCHARD PHARMACEUTICALS' in name) or ('ORCHARD SPECIALTY' in name):
-            return 'ENVISIONRX.COM'
-        if 'ENVISION' in name:
-            return 'ENVISIONRX.COM'
-        if ('CURASCRIPT' in name) or ('ACCREDO' in name):
-            return 'ACCREDO.COM'
-        if ('CVS' in name) or ('TARGET' in name) or ('CAREMARK' in name):
-            return 'CVS PHARMACY'
-        if name.startswith('A '):
-            name = name[2:]
-        if ('FRONSKE' in name) or ('NAU CAMPUS' in name):
-            return 'NORTH AZ UNIV FRONSKE HEALTH SERVICES'
-        if 'WEGMANS' in name:
-            return 'WEGMANS PHARMACY'
+        name_dict = {
+            'ENVISIONRX.COM': [
+                'ORCHARD PHARMACEUTICALS', 'ORCHARD SPECIALTY', 'ENVISION'],
+            'ACCREDO.COM': ['CURASCRIPT', 'ACCREDO'],
+            'CVS PHARMACY': ['CVS', 'TARGET', 'CAREMARK'],
+            'NAU FRONSKE HEALTH SERVICES': ['FRONSKE', 'NAU CAMPUS'],
+            'WEGMANS PHARMACY': ['WEGMANS'],
+            'WALGREENS PHARMACY': ['WALGREENS'],
+            'ALBERTSONS PHARMACY': ['ALBERTSONS', 'SAVON'],
+            'WALMART PHARMACY': ['WALMART', 'WAL-MART'],
+            'KMART PHARMACY': ['K MART', 'KMART'],
+            }
+
+        for updated_name, markers in name_dict.items():
+            if any(marker in name for marker in markers):
+                return updated_name
         name = re.sub(r'[\.,\-/\'#]', '', name)
         name = re.sub(r'[0-9]+', '', name)
         concatd = [[' COMP', ' CO'], ['SOLUTIO', 'SOLUTIONS'],
                    ['EMPLOYE', 'EMPLOYEE'], [' SUB', ' SUBWAY'],
-                   [' SP', '']]
+                   [' SP', ''], [' WY', ' WAY']]
         for cutoff in concatd:
             if name.endswith(cutoff[0]):
                 name = name[:-len(cutoff[0])] + cutoff[1]
-        pairs = [['TARGET', 'CVS'], ['WAL-MART', 'WALMART'], ['INC', ''],
-                 ['HEALTHGROUP', 'HEALTH GROUP'], ['GRP', 'GROUP'],
-                 ['PHARMACIES', 'PHARMACY'], ['SERVICES', ''],
-                 ['SERVICE', ''], ['SPECIALTY', ''],
-                 ['PHCY', 'PHARMACY'], ['&', 'AND'], ['COMPANY', 'CO'],
-                 ['LLC', ''], [' LL', ''], ['PHARMACY', ' PHARMACY '],
-                 ['DRUGS', ' DRUGS '], ['K MART', 'KMART'],
-                 ['UNIV', 'UNIVERSITY'], ['HLTH', 'HEALTH'],
-                 ['SRVCES', 'SERVICES'], ['HELTH', 'HEALTH'],
-                 ['SVCS', 'SERVICES'], [' OF ', '']]
+        pairs = [['INC', ''], ['HEALTHGROUP', 'HEALTH GROUP'], ['LLC', ''],
+                 ['GRP', 'GROUP'], ['PHARMACIES', 'PHARMACY'], [' LL', ''],
+                 ['SERVICES', ''], ['SERVICE', ''], ['SPECIALTY', ''],
+                 ['PHCY', 'PHARMACY'], ['HLTH', 'HEALTH'], ['COMPANY', 'CO'],
+                 ['PHARMACY', ' PHARMACY '], ['UNIV', 'UNIVERSITY'],
+                 ['DRUGS', ' DRUGS '],  ['&', 'AND'], ['SRVCES', ''],
+                 ['HELTH', 'HEALTH'], ['SVCS', ''], [' OF ', '']]
         for pair in pairs:
             name = name.replace(pair[0], pair[1])
+        name = ' '.join(name.split())
+        if name == '':
+            return np.nan
         tag = ' PHARMACY'
-        for i in range(1, len(tag)):
+        for i in range(2, len(tag)):
             if name.endswith(tag[:i]):
                 name += tag[i:]
         if 'PHARMACY' not in name:
             name += tag
-        name = ' '.join(name.split())
-        if name == '':
-            return np.nan
 
     return name
 

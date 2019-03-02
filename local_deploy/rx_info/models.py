@@ -19,6 +19,8 @@ class PharmacyInfo(models.Model):
     '''Model containing complete pharmacy information
     '''
     PharmacyID = models.CharField(max_length=200, primary_key=True)
+    PharmacyNumber = models.CharField(max_length=15)
+    PharmacyNPI = models.CharField(max_length=15)
     PharmacyName = models.CharField(max_length=200)
     PharmacyStreetAddress1 = models.CharField(max_length=200)
     PharmacyCity = models.CharField(max_length=200)
