@@ -33,7 +33,7 @@ claims_data_handling/supplementary_data/uszips.csv
 claims_data_handling/supplementary_data/product.txt
 rxlenv/
 claims_data_handling/processed_data/*
-.DS_Store
+*.DS_Store
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
