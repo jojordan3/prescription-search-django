@@ -29,6 +29,10 @@ class PharmacyInfo(models.Model):
     # Allows SQLite query sets to be transformed to pandas objects
     objects = DataFrameManager()
 
+    def __str__(self):
+        return (self.PharmacyName + ' at ' + self.PharmacyStreetAddress1 +
+                ', ' + self.PharmacyCity)
+
 
 class RxClaim(models.Model):
     '''Model for individual rx_claims--used in views.py to search local

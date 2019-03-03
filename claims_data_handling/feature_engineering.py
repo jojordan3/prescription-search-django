@@ -55,7 +55,7 @@ def standardize_address(address):
             ['FREDRICK', 'FREDERICK'], [' STE ', ' SUITE '], ['SECOND', '2ND'],
             [' CALEF', ' CALIFORNIA'], [' SO ', ' S '], ['FIRST', '1ST'],
             [' MOUNT ', ' MT '], ['CTR', 'CENTER'], ['CNTR', 'CENTER']
-            ]
+        ]
         address = re.sub(r'[#\.,\-/\']', '', address)
         for abbreviation in abbreviations:
             if isinstance(address, str):
@@ -68,11 +68,15 @@ def standardize_address(address):
 
 
 def fix_pharm_name(name):
-    '''Standardize pharmacy name'''
+    '''This function applies a series of functions to the pharmacy
+    names.'''
     if isinstance(name, str):
+        # Most of these are companies that have been bought out or that
+        # sometimes can come with additional (non-standard) identifiers
+        # which make it difficult to determine when claims come from the
+        # same pharmacy.
         name_dict = {
-            'ENVISIONRX.COM': [
-                'ORCHARD PHARMACEUTICALS', 'ORCHARD SPECIALTY', 'ENVISION'],
+            'ENVISIONRX.COM': ['ORCHARD PHARM', 'ORCHARD SP', 'ENVISION'],
             'ACCREDO.COM': ['CURASCRIPT', 'ACCREDO'],
             'CVS PHARMACY': ['CVS', 'TARGET', 'CAREMARK'],
             'NAU FRONSKE HEALTH SERVICES': ['FRONSKE', 'NAU CAMPUS'],
@@ -81,31 +85,48 @@ def fix_pharm_name(name):
             'ALBERTSONS PHARMACY': ['ALBERTSONS', 'SAVON'],
             'WALMART PHARMACY': ['WALMART', 'WAL-MART'],
             'KMART PHARMACY': ['K MART', 'KMART'],
+            'PLANNED PARENTHOOD': ['PLANNED P']
             }
 
         for updated_name, markers in name_dict.items():
             if any(marker in name for marker in markers):
                 return updated_name
+
+        # Get rid of punctuation and numbers, as different sources use
+        # these characters differently.
         name = re.sub(r'[\.,\-/\'#]', '', name)
         name = re.sub(r'[0-9]+', '', name)
+
+        # Some sources seem to have character limits
         concatd = [[' COMP', ' CO'], ['SOLUTIO', 'SOLUTIONS'],
                    ['EMPLOYE', 'EMPLOYEE'], [' SUB', ' SUBWAY'],
                    [' SP', ''], [' WY', ' WAY']]
         for cutoff in concatd:
             if name.endswith(cutoff[0]):
                 name = name[:-len(cutoff[0])] + cutoff[1]
-        pairs = [['INC', ''], ['HEALTHGROUP', 'HEALTH GROUP'], ['LLC', ''],
-                 ['GRP', 'GROUP'], ['PHARMACIES', 'PHARMACY'], [' LL', ''],
-                 ['SERVICES', ''], ['SERVICE', ''], ['SPECIALTY', ''],
-                 ['PHCY', 'PHARMACY'], ['HLTH', 'HEALTH'], ['COMPANY', 'CO'],
-                 ['PHARMACY', ' PHARMACY '], ['UNIV', 'UNIVERSITY'],
-                 ['DRUGS', ' DRUGS '],  ['&', 'AND'], ['SRVCES', ''],
-                 ['HELTH', 'HEALTH'], ['SVCS', ''], [' OF ', '']]
+
+        # These abbreviations and special characters are used
+        # inconsistently
+        pairs = [['INC', ''], ['HEALTHGROUP', 'HEALTH GROUP'],
+                 ['GRP', 'GROUP'], ['PHARMACIES', 'PHARMACY'],
+                 ['SERVICES', ''], ['SERVICE', ''], ['LLC', ''],
+                 ['SPECIALTY', ''], ['PHCY', 'PHARMACY'],
+                 ['&', 'AND'], ['COMPANY', 'CO'], [' LL', ''],
+                 ['PHARMACY', ' PHARMACY '], ['DRUGS', ' DRUGS '],
+                 ['UNIV', 'UNIVERSITY'], ['HLTH', 'HEALTH'],
+                 ['SRVCES', ''], ['HELTH', 'HEALTH'],
+                 ['SVCS', ''], [' OF ', '']]
         for pair in pairs:
             name = name.replace(pair[0], pair[1])
+
+        # This step is just to get rid of any unnecessary whitespace
+        # and expose any empty strings, which are turned into NaN next
         name = ' '.join(name.split())
         if name == '':
             return np.nan
+
+        # Ensure all pharmacies have the word "pharmacy" in them for
+        # the sake of consistency
         tag = ' PHARMACY'
         for i in range(2, len(tag)):
             if name.endswith(tag[:i]):

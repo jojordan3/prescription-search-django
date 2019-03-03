@@ -28,15 +28,16 @@ MANIFEST
 # Files
 .vscode/
 local_deploy/db.sqlite3
-claims_data_handling/data/*
+claims_data_handling/raw_data/*
 claims_data_handling/supplementary_data/uszips.csv
 claims_data_handling/supplementary_data/product.txt
 rxlenv/
+claims_data_handling/processed_data/*
 .DS_Store
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+#  before PyInstaller builds the exe, so as .to inject date/other infos into it.
 *.manifest
 *.spec
 
