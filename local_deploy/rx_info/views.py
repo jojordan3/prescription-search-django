@@ -32,7 +32,7 @@ def pharmacy_results(request):
     drug = request.GET.get('drug')
     quantity = request.GET.get('quantity')
 
-    # force the characters in the drug string to upper case to match database
+    # force the characters in the drug string to lower case to match database
     # Define variables from the input zip code and drug name to match the
     # two engineered columns
     drug = drug.lower()

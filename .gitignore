@@ -28,13 +28,13 @@ MANIFEST
 # Files
 .vscode/
 local_deploy/db.sqlite3
-claims_data_handling/raw_data/*
+claims_data_handling/raw_data/
 claims_data_handling/supplementary_data/uszips.csv
 claims_data_handling/supplementary_data/product.txt
-rxlenv/
-claims_data_handling/processed_data/*
+claims_data_handling/processed_data/
 *.DS_Store
-
+db.sqlite3
+.env
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as .to inject date/other infos into it.
@@ -63,7 +63,7 @@ coverage.xml
 
 # Django stuff:
 *.log
-local_settings.py
+private.py
 db.sqlite3
 *.pyc
 *~
@@ -72,6 +72,8 @@ myvenv
 db.sqlite3
 /static
 .DS_Store
+deactivate
+private.py
 
 # Flask stuff:
 instance/

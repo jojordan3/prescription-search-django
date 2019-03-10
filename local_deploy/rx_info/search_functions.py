@@ -1,6 +1,8 @@
 from .models import RxClaim, PharmacyInfo, BrandToGeneric, ZipCodeInfo
 import pandas as pd
 from django_pandas.io import read_frame
+from geopy.distance import distance as gdist
+import psycopg2
 
 
 def search_by_pharm(drug, zipcode):

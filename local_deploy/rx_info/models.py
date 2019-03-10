@@ -1,5 +1,4 @@
 from django.db import models
-from django_pandas.managers import DataFrameManager
 import numpy as np
 
 
@@ -14,6 +13,9 @@ class ZipCodeInfo(models.Model):
     # Allows SQLite query sets to be transformed to pandas objects
     objects = DataFrameManager()
 
+    def __str__(self):
+        return self.zipcode
+
 
 class PharmacyInfo(models.Model):
     '''Model containing complete pharmacy information
@@ -26,9 +28,6 @@ class PharmacyInfo(models.Model):
     PharmacyStreetAddress1 = models.CharField(max_length=200)
     PharmacyCity = models.CharField(max_length=200)
     PharmacyZip = models.ForeignKey(ZipCodeInfo, on_delete='set null')
-
-    # Allows SQLite query sets to be transformed to pandas objects
-    objects = DataFrameManager()
 
     def __str__(self):
         return (self.PharmacyName + ' at ' + self.PharmacyStreetAddress1 +
@@ -44,13 +43,17 @@ class RxClaim(models.Model):
     DrugLabelName = models.CharField(max_length=200)
     PBMVendor = models.CharField(max_length=200)
 
-    # Allows SQLite query sets to be transformed to pandas objects
-    objects = DataFrameManager()
+    def __str__(self):
+        return '<PharmacyID: {}, DrugLabelName: {}'.format(self.PharmacyID,
+                                                           self.DrugLabelName)
 
 
 class BrandToGeneric(models.Model):
     '''Model for individual rx_claims--used in views.py to search medications
     by PBM and to create SQLite db
     '''
-    Brand = models.CharField(max_length=200, primary_key=True)
-    Generic = models.CharField(max_length=200)
+    Brand = models.CharField(max_length=600)
+    Generic = models.CharField(max_length=600)
+
+    def __str__(self):
+        return '<{} is a brandname for {}'.format(self.Brand, self.Generic)
