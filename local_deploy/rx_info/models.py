@@ -1,5 +1,6 @@
 from django.db import models
 import numpy as np
+from django.core.validators import validate_comma_separated_integer_list
 
 
 class ZipCodeInfo(models.Model):
@@ -10,9 +11,6 @@ class ZipCodeInfo(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
-    # Allows SQLite query sets to be transformed to pandas objects
-    objects = DataFrameManager()
-
     def __str__(self):
         return self.zipcode
 
@@ -21,9 +19,8 @@ class PharmacyInfo(models.Model):
     '''Model containing complete pharmacy information
     '''
     PharmacyID = models.CharField(max_length=200, primary_key=True)
-    PharmacyNumber = models.CharField(max_length=15)
-    PharmacyNPI = models.CharField(max_length=15)
-    PharmacyTaxId = models.CharField(max_length=15)
+    PharmacyNumbers = models.CharField(
+        validators=[validate_comma_separated_integer_list], max_length=100)
     PharmacyName = models.CharField(max_length=200)
     PharmacyStreetAddress1 = models.CharField(max_length=200)
     PharmacyCity = models.CharField(max_length=200)
