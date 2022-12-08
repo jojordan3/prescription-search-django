@@ -1,5 +1,5 @@
 backports.csv==1.0.6
-certifi==2018.11.29
+certifi==2022.12.7
 defusedxml==0.5.0
 diff-match-patch==20181111
 Django==2.1.7
